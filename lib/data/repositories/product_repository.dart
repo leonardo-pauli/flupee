@@ -20,8 +20,10 @@ class ProductRepository {
 
         return productsList.map((e) => ProductModel.fromjson(e)).toList();
       }else{
-      throw Exception('Erro ao carregar os produtos. Código: ${response.statusCode}')
+      throw Exception('Erro ao carregar os produtos. Código: ${response.statusCode}');
       }
+    } catch (e) {
+      throw Exception('Erro de conexão: $e');
     }
   }
 }

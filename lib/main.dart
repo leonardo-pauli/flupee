@@ -1,7 +1,13 @@
+import 'package:flupee/presentation/screens/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 
-void main() {
-  runApp(const MainApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 class MainApp extends StatelessWidget {
@@ -9,12 +15,19 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+    return MaterialApp(
+      title: 'Flupee Store',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme:  ColorScheme.fromSeed(
+          seedColor: const Color(0xFF006666),
+          primary: const Color(0xFF006666),
+          // Um tom secundário para contraste
+          secondary: const Color(0xFFFF9F1C), 
         ),
+        useMaterial3: true,
       ),
+      home: const HomeScreen()
     );
   }
 }
