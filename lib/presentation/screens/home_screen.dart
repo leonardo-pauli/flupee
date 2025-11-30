@@ -13,9 +13,41 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flupee Store'),
+        title: TextButton(
+          onPressed: () {
+          Navigator.push(
+            context, MaterialPageRoute(
+              builder: (context) =>  HomeScreen(),
+              ),
+              );
+        }, 
+        child: const Text(
+          'Flupee Store', 
+          style: TextStyle(
+            color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            ),
         backgroundColor: const Color(0xFF006666), // Cor primária definida por você
         foregroundColor: Colors.white,
+        leading: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: SizedBox(
+            width: 200,
+            height: 200,
+            child: Image.asset(
+              'assets/images/flupee.png',
+            ),
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.shopping_cart),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            iconSize: 24,
+            tooltip: 'Carrinho',
+          ),
+        ],
       ),
       // O método .when() trata magicamente os 3 estados possíveis de uma chamada assíncrona
       body: productsAsync.when(
@@ -52,7 +84,7 @@ class HomeScreen extends ConsumerWidget {
                         width: double.infinity,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
-                          return Container(color: Colors.grey[200]); // Placeholder simples
+                          return Container(color: Colors.grey[200]); 
                         },
                         errorBuilder: (context, error, stackTrace) => 
                           const Icon(Icons.broken_image),
