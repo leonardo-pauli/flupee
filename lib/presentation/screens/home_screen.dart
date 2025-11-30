@@ -1,3 +1,4 @@
+import 'package:flupee/presentation/screens/product_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/product_provider.dart';
@@ -7,8 +8,6 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // O ref.watch fica "olhando" o provider. 
-    // Se o estado mudar (de carregando para sucesso), a tela redesenha sozinha.
     final productsAsync = ref.watch(productsProvider);
 
     return Scaffold(
@@ -27,7 +26,7 @@ class HomeScreen extends ConsumerWidget {
             color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
             ),
             ),
-        backgroundColor: const Color(0xFF006666), // Cor primária definida por você
+        backgroundColor: const Color(0xFF006666),
         foregroundColor: Colors.white,
         leading: Padding(
           padding: const EdgeInsets.all(4.0),
@@ -70,50 +69,60 @@ class HomeScreen extends ConsumerWidget {
             itemCount: products.length,
             itemBuilder: (context, index) {
               final product = products[index];
-              return Card(
-                elevation: 2,
-                clipBehavior: Clip.antiAlias, // Corta a imagem nas bordas arredondadas
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Imagem do Produto
-                    Expanded(
-                      child: Image.network(
-                        product.thumbnail,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(color: Colors.grey[200]); 
-                        },
-                        errorBuilder: (context, error, stackTrace) => 
-                          const Icon(Icons.broken_image),
-                      ),
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailScreen(product: product),
                     ),
-                    // Informações
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            product.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'R\$ ${product.price}',
-                            style: const TextStyle(
-                              color: Color(0xFF006666), 
-                              fontWeight: FontWeight.w600
+                  );
+                },
+                child: Card(
+                  elevation: 2,
+                  clipBehavior: Clip.antiAlias, // Corta a imagem nas bordas arredondadas
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Imagem do Produto
+                      Expanded(
+                        child: Image.network(
+                          product.thumbnail,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(color: Colors.grey[200]); 
+                          },
+                          errorBuilder: (context, error, stackTrace) => 
+                            const Icon(Icons.broken_image),
+                        ),
+                      ),
+                      // Informações
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              'R\$ ${product.price}',
+                              style: const TextStyle(
+                                color: Color(0xFF006666), 
+                                fontWeight: FontWeight.w600
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },

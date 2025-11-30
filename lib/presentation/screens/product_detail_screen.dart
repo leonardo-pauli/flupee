@@ -12,7 +12,7 @@ class ProductDetailScreen extends StatelessWidget {
         if(constraints.maxWidth > 800) {
           return _buildWebLayout(context);
         }else{
-          return Text('oi');
+          return _buildMobilelayout(context);
         }
       }),
     );
@@ -20,40 +20,63 @@ class ProductDetailScreen extends StatelessWidget {
 
 
   Widget _buildWebLayout(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(32.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 5, 
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(blurRadius: 20, color: Colors.black12)],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Hero(
-                  tag: 'product_${product.id}', 
-                  child: Image.network(
-                    product.thumbnail,
-                    fit: BoxFit.contain,
-                    height: 500, 
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(40.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 5, 
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [BoxShadow(blurRadius: 20, color: Colors.black12)],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Hero(
+                        tag: 'product_${product.id}', 
+                        child: Image.network(
+                          product.thumbnail,
+                          fit: BoxFit.contain,
+                          height: 500, 
+                        ),
+                      ),
+                    ),
                   ),
                 ),
+                
+                const SizedBox(width: 40), 
+      
+                Expanded(
+                  flex: 4,
+                  child: _buildBuyBox(context),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 60),
+            const Divider(),
+            const SizedBox(height: 30),
+      
+            Text(
+              'Descrição do Produto',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold
               ),
             ),
-          ),
-          
-          const SizedBox(width: 40), 
-
-          Expanded(
-            flex: 4, // Ocupa 40% do espaço
-            child: _buildProductInfo(context),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Text(
+              product.description,
+              style: TextStyle(fontSize: 18, color: Colors.grey[800], height: 1.6),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -61,73 +84,143 @@ class ProductDetailScreen extends StatelessWidget {
   Widget _buildMobilelayout(BuildContext context){
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Hero(
-            tag: 'product_${product.id}', 
-            child: Image.network(
-              product.thumbnail,
-              height: 300,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-            ),
-            Padding(padding: EdgeInsets.all(16),
-            child: _buildProductInfo(context),),
+          Container(
+            color: Colors.white,
+            height: 300,
+            width: double.infinity,
+            child: Hero(
+              tag: 'product_${product.id}', 
+              child: Image.network(
+                product.thumbnail,
+                fit: BoxFit.cover,
+              ),
+              ),
+          ),
+            Padding(padding: EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildBuyBox(context),
+                SizedBox(height: 30,),
+                Divider(),
+                SizedBox(height: 20,),
+
+                Text(
+                  "Descrição",
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  product.description,
+                  style: TextStyle(fontSize: 16, color: Colors.grey[800], height: 1.5),
+                ),
+              ],
+            )),
         ],
       ),
     );
   }
 
-  Widget _buildProductInfo(BuildContext context) {
+  Widget _buildBuyBox(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Chip(
-          label: Text(product.category.toUpperCase()),
-          backgroundColor: const Color(0xFF006666).withOpacity(0.1),
-          labelStyle: const TextStyle(color: Color(0xFF006666), fontWeight: FontWeight.bold),
+        Text(product.brand.toUpperCase(),
+        style: TextStyle(
+          color: Colors.grey,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
         ),
-        const SizedBox(height: 16),
+        ),
+        SizedBox(height: 8,),
         Text(
           product.title,
-          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, height: 1.2),
         ),
-        const SizedBox(height: 8),
+
+        Row(
+          children: [
+            _buildStarRating(product.rating),
+            SizedBox(width: 8),
+            Text(
+              "${product.rating} | ${product.reviews.length} avaliações",
+              style: TextStyle(color: Colors.blueGrey, fontSize: 14),
+            ),
+          ],
+        ),
+
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              'R\$ ${product.price}',
+              style: TextStyle(
+                fontSize: 32,
+                color: Color(0xFF006666),
+                fontWeight: FontWeight.bold
+              ),
+            ),
+            SizedBox(width: 12,),
+            if(product.discountPercentage > 0)
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.red[50],
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                '-${product.discountPercentage}\$ OFF',
+                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              ),
+            )
+          ],
+        ),
+        SizedBox(height: 8,),
+
         Text(
-          'R\$ ${product.price}',
-          style: const TextStyle(
-            fontSize: 28,
-            color: Color(0xFF006666),
-            fontWeight: FontWeight.w600,
+          product.stockStatus,
+          style: TextStyle(
+            color: product.stockStatus.contains('Low') ? Colors.orange : Colors.green,
+            fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 24),
-        Text(
-          product.description,
-          style: TextStyle(fontSize: 16, color: Colors.grey[700], height: 1.5),
-        ),
-        const SizedBox(height: 32),
-        // Botão de Ação
+        SizedBox(height: 32,),
+
         SizedBox(
           width: double.infinity,
-          height: 55,
+          height: 56,
           child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF006666),
+              backgroundColor: Color(0xFF006666),
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
-            onPressed: () {
+            onPressed: (){
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Adicionado ao carrinho (Lógica em breve!)')),
+                SnackBar(content: Text('Adicionado ao Carrinho')),
               );
-            },
-            icon: const Icon(Icons.shopping_cart_outlined),
-            label: const Text('ADICIONAR AO CARRINHO', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          ),
-        ),
+            }, 
+            icon: Icon(Icons.shopping_bag_outlined),
+            label: Text('ADICIONAR AO CARRINHO', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+            ),
+        )
       ],
+    );
+  }
+
+  Widget _buildStarRating(double rating){
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index){
+        bool isSelected = index < rating.round();
+        return Icon(
+          isSelected ? Icons.star : Icons.star_border,
+          color: Colors.amber,
+          size: 20,
+        );
+      }),
     );
   }
 }
