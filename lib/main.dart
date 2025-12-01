@@ -2,6 +2,7 @@ import 'package:flupee/domain/entities/product.dart';
 import 'package:flupee/presentation/screens/home_screen.dart';
 import 'package:flupee/presentation/screens/product_detail_screen.dart';
 import 'package:flupee/presentation/widgets/base_layout.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +10,10 @@ import 'package:hive_flutter/adapters.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
+  // Hive não funciona bem no web, então só inicializamos em outras plataformas
+  if (!kIsWeb) {
+    await Hive.initFlutter();
+  }
   runApp(const ProviderScope(child: MainApp()));
 }
 
